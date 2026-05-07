@@ -12,8 +12,24 @@ dependencies = [
   "numpy",
   "numba",
   "pandas",
-  "scipy"
+  "scipy",
+  "scikit-learn",
+  "requests",
 ]
 
-[tool.setuptools]
-py-modules = ["wordle"]
+[project.scripts]
+wordle-demo-solver = "wordle_solver_strategy.demos.demo_solver:main"
+wordle-demo-game = "wordle_solver_strategy.demos.demo_game:main"
+wordle-demo-ig = "wordle_solver_strategy.demos.demo_ig:main"
+wordle-bs-plays = "wordle_solver_strategy.demos.bs_plays:main"
+wordle-bs-tiles = "wordle_solver_strategy.demos.bs_tiles:main"
+wordle-ngram-download = "wordle_solver_strategy.demos.ngram_download:main"
+wordle-exp-comparison-standard = "wordle_solver_strategy.experiments.comparison_standardmode:main"
+wordle-exp-comparison-hard = "wordle_solver_strategy.experiments.comparison_hardmode:main"
+wordle-exp-first-guess-standard = "wordle_solver_strategy.experiments.first_guess_standard:main"
+wordle-exp-first-guess-hard = "wordle_solver_strategy.experiments.first_guess_hardmode:main"
+wordle-exp-first-guess-shallow = "wordle_solver_strategy.experiments.first_guess_shallow:main"
+wordle-exp-cross-validate = "wordle_solver_strategy.experiments.cross_validate:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

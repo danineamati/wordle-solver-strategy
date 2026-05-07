@@ -1,18 +1,23 @@
-from wordle import Game, MaxInfoAgent, MaxSplitsAgent, MaxPruneAgent
-from wordle import get_numeric_representations, get_bin_table
-import numpy as np
-from multiprocessing import Pool, cpu_count
-import time
-import pandas as pd
 import itertools
+import time
+from multiprocessing import Pool, cpu_count
+
+import numpy as np
+import pandas as pd
+
+from wordle_solver_strategy import (
+    Game,
+    MaxInfoAgent,
+    MaxPruneAgent,
+    MaxSplitsAgent,
+    get_numeric_representations,
+)
+from wordle_solver_strategy.paths import allowed_words_dir, experiments_csv_dir
 
 
 def sub_job(agent_cls, sub_answers, answers, guesses):
-
     guesses_numba, guesses_char_counts = get_numeric_representations(guesses)
     answers_numba, answers_char_counts = get_numeric_representations(answers)
-
-    bin_table = get_bin_table(guesses_numba, answers_numba, answers_char_counts)
 
     results = []
 
@@ -24,10 +29,9 @@ def sub_job(agent_cls, sub_answers, answers, guesses):
         agent = agent_cls(
             answers,
             guesses,
-            mode="hard",
+            mode="standard",
             guess_data=(guesses_numba, guesses_char_counts),
             answer_data=(answers_numba, answers_char_counts),
-            bin_table=bin_table
         )
         final_guess, n_guesses = agent.play(g)
 
@@ -80,14 +84,21 @@ def job(job_dict, answers, guesses):
     return job_dict
 
 
-if __name__ == "__main__":
-    with open("../words_answers.txt", "r") as answers_file:
+def main() -> None:
+    answers_path = allowed_words_dir() / "words_answers.txt"
+    guesses_path = allowed_words_dir() / "words_guesses.txt"
+    with open(answers_path, "r") as answers_file:
         answers = answers_file.read().splitlines()
-    with open("../words_guesses.txt", "r") as guesses_file:
+    with open(guesses_path, "r") as guesses_file:
         guesses = guesses_file.read().splitlines()
 
     agent_list = [MaxInfoAgent, MaxSplitsAgent, MaxPruneAgent]
 
     results = [job({"agent": agent}, answers, guesses) for agent in agent_list]
 
-    pd.DataFrame(results).to_csv("comparison_hardmode.csv", index=False)
+    out = experiments_csv_dir() / "comparison_standardmode.csv"
+    pd.DataFrame(results).to_csv(out, index=False)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

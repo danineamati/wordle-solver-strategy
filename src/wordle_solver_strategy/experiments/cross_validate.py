@@ -1,26 +1,31 @@
-from sklearn.model_selection import ShuffleSplit
-from wordle import Game, MaxInfoAgent, MaxSplitsAgent, MaxPruneAgent
-from wordle import get_numeric_representations, get_bin_table
-from multiprocessing import Pool, cpu_count
-import time
-import pandas as pd
-import numpy as np
 import itertools
 import string
+import time
+from multiprocessing import Pool, cpu_count
+
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import ShuffleSplit
+
+from wordle_solver_strategy import (
+    Game,
+    MaxInfoAgent,
+    MaxPruneAgent,
+    MaxSplitsAgent,
+    get_bin_table,
+    get_numeric_representations,
+)
 
 
 def sub_job(agent_cls, sub_answers, guesses):
-
     guesses_numba, guesses_char_counts = get_numeric_representations(guesses)
     answers_numba, answers_char_counts = get_numeric_representations(sub_answers)
 
     bin_table = get_bin_table(guesses_numba, answers_numba, answers_char_counts)
 
     sub_answer_results = []
-    # print(sub_answers)
 
     for sub_answer_idx, sub_answer in enumerate(sub_answers):
-
         g = Game(word=sub_answer, verbose=False)
         agent = agent_cls(
             sub_answers,
@@ -40,7 +45,6 @@ def sub_job(agent_cls, sub_answers, guesses):
 
 
 def job(job_dict, guesses):
-
     agent_cls = job_dict["agent"]
     print(agent_cls.__name__)
 
@@ -53,7 +57,6 @@ def job(job_dict, guesses):
         print(counter + 1)
 
         split_answers = list(np.array(guesses)[test_index])
-        # print(fold_answers)
 
         worker_split_answers = np.array_split(split_answers, cpu_count())
 
@@ -80,10 +83,7 @@ def job(job_dict, guesses):
     return job_results
 
 
-if __name__ == "__main__":
-    # with open("../words_guesses.txt", "r") as guesses_file:
-    #     guesses = guesses_file.read().splitlines()
-
+def main() -> None:
     alphabet = string.ascii_lowercase
     guesses_all = list(itertools.product(alphabet, repeat=5))
 
@@ -92,8 +92,6 @@ if __name__ == "__main__":
     guesses = ["".join(guesses_all[idx]) for idx in guess_idxs]
 
     agent_list = [MaxInfoAgent, MaxSplitsAgent, MaxPruneAgent]
-
-    # kf = KFold(n_splits=5, shuffle=True, random_state=0)
 
     kf = ShuffleSplit(n_splits=10, test_size=0.1, random_state=0)
 
@@ -105,3 +103,7 @@ if __name__ == "__main__":
 
     cols = ["agent", "split_idx", "mean_plays", "time"]
     print(pd.DataFrame(total_results, columns=cols).groupby("agent").mean())
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
