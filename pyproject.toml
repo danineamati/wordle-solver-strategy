@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wordle-solver-strategy"
+version = "0.1.0"
+description = "A fast Wordle solver written in Python using numba."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+  "numpy",
+  "numba",
+  "pandas",
+]
+
+[tool.setuptools]
+py-modules = ["wordle"]
