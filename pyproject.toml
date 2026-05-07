@@ -30,6 +30,7 @@ wordle-exp-first-guess-standard = "wordle_solver_strategy.experiments.first_gues
 wordle-exp-first-guess-hard = "wordle_solver_strategy.experiments.first_guess_hardmode:main"
 wordle-exp-first-guess-shallow = "wordle_solver_strategy.experiments.first_guess_shallow:main"
 wordle-exp-cross-validate = "wordle_solver_strategy.experiments.cross_validate:main"
+wordle-exp-second-guess-strategy = "wordle_solver_strategy.experiments.second_guess_strategy:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

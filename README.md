@@ -95,6 +95,29 @@ characteristics of each policy on the original wordle answer/guess list.
 | MaxPrune  | Standard | 'laten'               | 4.439469320066335  | 'sissy' 'awake' 'blush' ... 'judge' 'rower' 'shave'                                                                                                                                                     |
 |           | Hard     | 'leant'               | 3.8034934497816595 | 'dolly' 'mover' 'piper' 'water' 'foist' 'bound' 'sense' 'viper' 'rarer' 'waver' 'wreak' 'flake' 'wound' 'baste' 'tight' 'biddy' 'happy' 'fleck' 'mossy' 'hound' 'blame' 'vaunt' 'match' 'catty' 'rower' |
 
+## Second Guess Strategy Experiment
+
+Generate a capped second-guess strategy for a specific first word. This script
+groups answers by the first feedback code and assigns the best second guess per
+group using an information-theoretic objective.
+
+Examples:
+
+```shell
+wordle-exp-second-guess-strategy crane
+wordle-exp-second-guess-strategy crane --max-num-second-word-in-strategy 8
+```
+
+Optional speed control:
+
+```shell
+wordle-exp-second-guess-strategy crane --max-num-second-word-in-strategy 8 --top-n-candidates 500
+```
+
+The output CSV is saved to:
+
+`experiments_csv/second_guess_strategy_for_{first_word}_max_{k}.csv`
+
 ### Notes
 
 Failed words are often due to "lookalikes". For example with the word `hatch` the solver will check `match`, `batch`, `patch` and `latch` first and ultimately fail.
