@@ -12,6 +12,7 @@ dependencies = [
   "numpy",
   "numba",
   "pandas",
+  "scipy"
 ]
 
 [tool.setuptools]

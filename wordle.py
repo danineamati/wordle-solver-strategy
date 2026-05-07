@@ -7,6 +7,11 @@ import time
 
 alphabet = string.ascii_lowercase
 
+def code_to_emoji(code):
+    return "".join([
+        "⬛" if c == "0" else "🟨" if c == "1" else "🟩" for c in code
+    ])
+
 def get_match_code_game(guess, answer):
     result = array.array("u", ["0", "0", "0", "0", "0"])
 
@@ -299,9 +304,16 @@ class Game:
             if guess != self.word:
                 self.guess_list.append(guess)
                 code = get_match_code_game(guess, self.word)
+                emoji_code = code_to_emoji(code)
                 if self.verbose:
-                    print(guess, code)
+                    print(guess, emoji_code, code)
                 return code
+
+            else:
+                code = "22222"
+                emoji_code = code_to_emoji(code)
+                if self.verbose:
+                    print(guess, emoji_code, code)
 
         return None
 

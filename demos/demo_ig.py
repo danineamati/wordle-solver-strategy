@@ -3,9 +3,16 @@ import numpy as np
 from scipy.stats import entropy
 from wordle import information_gain
 
-with open("../words_answers.txt", "r") as answers_file:
+import pathlib
+
+CURR_FILE_DIR = pathlib.Path(__file__).parent
+ROOT_DIR = CURR_FILE_DIR.parent
+WORDS_ANSWERS_PATH = ROOT_DIR / "words_answers.txt"
+WORDS_GUESSES_PATH = ROOT_DIR / "words_guesses.txt"
+
+with open(WORDS_ANSWERS_PATH, "r") as answers_file:
     answers = answers_file.read().splitlines()
-with open("../words_guesses.txt", "r") as guesses_file:
+with open(WORDS_GUESSES_PATH, "r") as guesses_file:
     guesses = guesses_file.read().splitlines()
 
 
