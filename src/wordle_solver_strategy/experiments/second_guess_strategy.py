@@ -180,10 +180,10 @@ def build_output_rows(
         code_string = code_int_to_string(int(code))
         rows.append(
             {
-                "first_word": first_word,
+                "first_word": first_word.upper(),
                 "first_code_emoji": code_to_emoji(code_string),
                 "first_code": code_string,
-                "assigned_second_guess": assigned_guess,
+                "assigned_second_guess": assigned_guess.upper(),
                 "max_num_second_word_in_strategy": k,
                 "is_bin_solved": bool(code_sizes[active_idx] == 1),
                 "n_answers_in_bin": int(code_sizes[active_idx]),
