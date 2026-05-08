@@ -26,6 +26,7 @@ Layout:
 - `allowed_words/` — `words_answers.txt` and `words_guesses.txt`
 - `experiments_csv/` — generated or committed experiment CSV outputs
 - `src/wordle_solver_strategy/` — library (`import wordle_solver_strategy`), demos, and experiment scripts
+- `src/wordle_solver_strategy/strategy_tree/` — decision tree fit/export helpers for second-guess strategy CSVs
 
 Console entry points (after install) include `wordle-demo-solver`, `wordle-demo-game`, `wordle-bs-plays`, `wordle-bs-tiles`, and `wordle-exp-*` scripts for batch experiments (see `pyproject.toml` `[project.scripts]`).
 
@@ -104,19 +105,34 @@ group using an information-theoretic objective.
 Examples:
 
 ```shell
-wordle-exp-second-guess-strategy crane
-wordle-exp-second-guess-strategy crane --max-num-second-word-in-strategy 8
+wordle-second-guess-strategy crane
+wordle-second-guess-strategy crane --max-num-second-word-in-strategy 8
 ```
 
 Optional speed control:
 
 ```shell
-wordle-exp-second-guess-strategy crane --max-num-second-word-in-strategy 8 --top-n-candidates 500
+wordle-second-guess-strategy crane --max-num-second-word-in-strategy 8 --top-n-candidates 500
 ```
 
 The output CSV is saved to:
 
 `experiments_csv/second_guess_strategy_for_{first_word}_max_{k}.csv`
+
+### Second-guess decision tree (approximation)
+
+After generating a strategy CSV, you can fit a shallow, human-readable decision tree that approximates `assigned_second_guess` from the first-guess feedback (`first_code`). Row weights use `bin_probability` (normalized to sum to 1), so accuracy reflects expected agreement with the oracle strategy over answers. A small `--max-depth` compresses many feedback patterns into one rule set; resubstitution accuracy is printed on the same CSV used for training.
+
+```shell
+wordle-second-guess-tree
+wordle-second-guess-tree --first-word crane --max-num-second-word-in-strategy 8 --max-depth 4
+wordle-second-guess-tree --csv experiments_csv/second_guess_strategy_for_crane_max_8.csv
+wordle-second-guess-tree --csv experiments_csv/second_guess_strategy_for_crane_max_8.csv --save
+wordle-second-guess-tree --csv experiments_csv/second_guess_strategy_for_crane_max_8.csv --save --human-readable
+wordle-second-guess-tree --output-dir experiments_csv
+```
+
+With `--save`, the report is written under `experiments_csv/` at the repo root (same place as the strategy CSV). With `--output-dir DIR`, the same file is written to `DIR` (directories are created if needed). The filename is `{strategy_csv_stem}_decision_tree_depth_{d}.txt` (and `_seed_{s}` when `--seed` is not 0, and `_human` when `--human-readable` rewrites split lines in plain English).
 
 ### Notes
 

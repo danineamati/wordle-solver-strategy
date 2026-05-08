@@ -1,0 +1,62 @@
+CSV: C:\Users\danin\Documents\GitHub\wordle-solver-strategy\experiments_csv\second_guess_strategy_for_crane_max_5.csv
+Rows: 142  Features: 8
+Weights: normalized bin_probability (sum=1); accuracy is expected match rate vs oracle labels on this table.
+Weighted accuracy (resubstitution): 0.6088
+Tree depth cap: 4  Leaves: 9
+
+How to interpret this tree
+-------------------------
+Context: The first guess is fixed as "crane". Each row in the training data is one possible
+Wordle feedback pattern for that guess (one row per `first_code` in the CSV).
+
+Per-position feedback (ordinal features):
+  The first guess has five letters. Each slot uses one feature named <letter>_tile with a
+  numeric code for that slot's tile:
+    0 = absent (gray; letter not in the solution, or extra copy not placed)
+    1 = present elsewhere (yellow)
+    2 = correct spot (green)
+
+  Letter to feature for this run: 'c' -> c_tile (position 1), 'r' -> r_tile (position 2), 'a' -> a_tile (position 3), 'n' -> n_tile (position 4), 'e' -> e_tile (position 5)
+
+Count features (integers 0..5, sum to 5):
+  n_green   — how many positions are green (2)
+  n_yellow  — how many are yellow (1)
+  n_absent  — how many are gray (0)
+
+How sklearn splits (thresholds like "e_tile <= 0.50"):
+  The tree tests a numeric feature against a threshold. For tile codes 0/1/2:
+    "<= 0.5"  -> value is 0 (gray) vs yellow/green
+    "<= 1.5"  -> values 0 or 1 vs green (2)
+  For n_green / n_yellow / n_absent, splits such as "<= 3.5" sit halfway between whole counts.
+
+Leaves: "class: <word>" is the second guess the tree assigns for all patterns that reach
+that leaf. It approximates the CSV's `assigned_second_guess`; with a small depth, multiple
+patterns share one leaf so the label is the majority / weighted choice from the solver.
+
+Decision tree (sklearn export)
+----------------------------
+|--- n_absent <= 4.50
+|   |--- r_tile <= 0.50
+|   |   |--- a_tile <= 1.50
+|   |   |   |--- e_tile <= 0.50
+|   |   |   |   |--- class: toils
+|   |   |   |--- e_tile >  0.50
+|   |   |   |   |--- class: toils
+|   |   |--- a_tile >  1.50
+|   |   |   |--- c_tile <= 1.50
+|   |   |   |   |--- class: spilt
+|   |   |   |--- c_tile >  1.50
+|   |   |   |   |--- class: toils
+|   |--- r_tile >  0.50
+|   |   |--- e_tile <= 0.50
+|   |   |   |--- n_green <= 1.50
+|   |   |   |   |--- class: south
+|   |   |   |--- n_green >  1.50
+|   |   |   |   |--- class: spilt
+|   |   |--- e_tile >  0.50
+|   |   |   |--- n_yellow <= 1.50
+|   |   |   |   |--- class: south
+|   |   |   |--- n_yellow >  1.50
+|   |   |   |   |--- class: toils
+|--- n_absent >  4.50
+|   |--- class: toils
